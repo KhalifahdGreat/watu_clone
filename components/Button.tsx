@@ -4,17 +4,28 @@ import Colors from "@/constants/Colors";
 import { Ionicons } from "@expo/vector-icons";
 
 interface Props {
+  buttonName: string;
+  IconColor: string;
   genericBtnFunction: () => void;
+  buttonStyle?: object; // Add custom button style
+  buttonTextStyle?: object; // Add custom button text style
+  disabled: boolean;
 }
 
-const GenericButton = ({ genericBtnFunction }: Props) => {
+const GenericButton = ({
+  buttonName,
+  IconColor,
+  genericBtnFunction,
+  buttonStyle,
+  buttonTextStyle,
+}: Props) => {
   return (
-    <View style={styles.container} className='px-4'>
-      <TouchableOpacity style={styles.button} onPress={genericBtnFunction}>
-        <Text style={styles.buttonText} className='capitalize'>
-          create account
-        </Text>
-        <Ionicons name='arrow-forward' size={24} color='#fff' />
+    <View style={styles.container}>
+      <TouchableOpacity
+        style={[styles.button, buttonStyle]}
+        onPress={genericBtnFunction}>
+        <Text style={[styles.buttonText, buttonTextStyle]}>{buttonName}</Text>
+        <Ionicons name='arrow-forward' size={24} color={IconColor} />
       </TouchableOpacity>
     </View>
   );
@@ -22,24 +33,25 @@ const GenericButton = ({ genericBtnFunction }: Props) => {
 
 const styles = StyleSheet.create({
   container: {
-    marginTop: 30,
+    width: "100%",
+    marginTop: 10,
   },
   button: {
-    height: 60,
+    height: 50, // Default height
+    gap: 10,
     borderRadius: 8,
     paddingVertical: 10,
     paddingHorizontal: 16,
     backgroundColor: Colors.primary, // Adjust the background color as needed
     flexDirection: "row",
-    gap: 8,
     justifyContent: "center",
     alignItems: "center",
-    marginVertical: 8, // Gap from other elements
   },
   buttonText: {
     color: "#fff", // Adjust text color as needed
-    fontSize: 18,
+    fontSize: 16,
     fontFamily: "po-r", // Adjust font size as needed
   },
 });
+
 export default GenericButton;

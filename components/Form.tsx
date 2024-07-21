@@ -1,29 +1,48 @@
-import React from "react";
-import { View, Text, StyleSheet, Dimensions } from "react-native";
+import React, { ReactNode } from "react";
+import {
+  View,
+  Text,
+  StyleSheet,
+  Dimensions,
+  TextStyle,
+  ViewStyle,
+} from "react-native";
+import { Formik } from "formik";
+import * as Yup from "yup";
 import Watu from "@/assets/svg/Watu logo (white).svg";
 import Colors from "@/constants/Colors";
 import BackButton from "./BackButton";
 
 interface Prop {
   formHeader: string;
-  formDescription: string;
-  children: React.ReactNode;
+  formDescription?: string;
+  children: ReactNode;
+  headerStyle?: TextStyle;
+  descriptionStyle?: TextStyle;
 }
 
 const { width: screenWidth } = Dimensions.get("window");
 
-export default function Form({ formHeader, formDescription, children }: Prop) {
+export default function Form({
+  formHeader,
+  formDescription,
+  children,
+  headerStyle,
+  descriptionStyle,
+}: Prop) {
   return (
     <View style={styles.container} className='py-2'>
-      <BackButton />
       <Watu />
       <View style={styles.form} className='py-6 px-4'>
-        <View className='mb-4'>
-          <Text style={styles.header}>{formHeader}</Text>
-          <Text style={styles.description}>{formDescription}</Text>
+        <View>
+          <Text style={[styles.header, headerStyle]}>{formHeader}</Text>
+          {formDescription ? (
+            <Text style={[styles.description, descriptionStyle]}>
+              {formDescription}
+            </Text>
+          ) : null}
         </View>
-
-        {children}
+        <View className='gap-1'>{children}</View>
       </View>
     </View>
   );
@@ -37,23 +56,20 @@ const styles = StyleSheet.create({
     gap: 24,
   },
   form: {
-    width: screenWidth - 30, // Screen width minus the total horizontal margin (10 on each side)
+    width: screenWidth - 30,
     backgroundColor: "#fff",
     borderRadius: 15,
-
     marginHorizontal: 10,
   },
   header: {
     fontSize: 19,
     fontWeight: "bold",
-    marginBottom: 8,
     fontFamily: "gr-sb",
     lineHeight: 24,
     color: Colors.primary,
   },
   description: {
     fontSize: 14,
-    marginBottom: 16,
     fontFamily: "po-r",
     lineHeight: 20,
     color: Colors.text_form,

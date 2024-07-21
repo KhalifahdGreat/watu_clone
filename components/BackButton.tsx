@@ -3,10 +3,16 @@ import React from "react";
 import { useRouter } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 
-const BackButton = () => {
+interface Prop {
+  style: object;
+}
+
+const BackButton = ({ style }: Prop) => {
   const router = useRouter();
   return (
-    <TouchableOpacity style={styles.backButton} onPress={() => router.back()}>
+    <TouchableOpacity
+      style={[styles.backButton, style]}
+      onPress={() => router.back()}>
       <Ionicons name='arrow-back' size={28} color='#fff' />
     </TouchableOpacity>
   );

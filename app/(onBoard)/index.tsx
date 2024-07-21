@@ -136,15 +136,20 @@ export default function OnboardingScreen() {
               />
             </View>
 
-            <View style={styles.bottomLogin}>
+            <View style={styles.bottomLogin} className='mx-4 mt-3'>
               <GenericButton
+                IconColor='#fff'
+                buttonName='Create Account'
                 genericBtnFunction={() => router.push("/(onBoard)/login")}
+                buttonStyle={styles.button}
+                buttonTextStyle={styles.buttonText}
+                disabled={false}
               />
               <View style={styles.bottomAlternative} className='leading-[5px]'>
                 <Text style={[styles.bottomText, styles.bottomTextOne]}>
                   Already have an account?
                 </Text>
-                <Link href={"/login"}>
+                <Link href={"(onBoard)/welcome"}>
                   {" "}
                   <Text
                     style={[styles.bottomText, styles.bottomTextTwo]}
@@ -205,7 +210,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   bottomText: {
-    fontSize: 16,
+    fontSize: 13,
     fontFamily: "po-r",
   },
   bottomTextOne: {
@@ -213,5 +218,18 @@ const styles = StyleSheet.create({
   },
   bottomTextTwo: {
     color: Colors.secondary,
+  },
+  button: {
+    height: 60, // Match the height of the input containers
+    borderRadius: 8,
+    backgroundColor: Colors.primary, // Adjust the background color as needed
+    justifyContent: "center",
+    alignItems: "center",
+    width: "100%", // Ensure the button takes the full width
+  },
+  buttonText: {
+    color: "#fff", // Adjust text color as needed
+    fontSize: 16,
+    fontFamily: "po-r", // Adjust font size as needed
   },
 });

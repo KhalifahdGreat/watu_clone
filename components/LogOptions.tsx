@@ -10,9 +10,9 @@ const validIconNames = [
 type IconName = (typeof validIconNames)[number];
 
 interface BtnProp {
-  iconName: IconName;
-  btnText: string;
-  onPress?: () => void;
+  iconName?: IconName;
+  btnText?: string;
+  onPress: () => void;
 }
 
 const LogOptions = ({ iconName, btnText, onPress }: BtnProp) => {

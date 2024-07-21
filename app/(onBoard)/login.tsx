@@ -2,8 +2,9 @@ import React from "react";
 import { View, StyleSheet, ImageBackground } from "react-native";
 import Form from "@/components/Form";
 
-import { router, useRouter } from "expo-router";
+import { useRouter } from "expo-router";
 import LogOptions from "@/components/LogOptions";
+import BackButton from "@/components/BackButton";
 
 const MyComponent = () => {
   const router = useRouter();
@@ -13,16 +14,19 @@ const MyComponent = () => {
         source={require("@/assets/images/backBlack.png")}
         style={styles.imageBackground}>
         <View>
+          <BackButton style={{}} />
           <Form
             formHeader={"Create an account"}
             formDescription={
               "Choose any of the method below to continue your account create. "
-            }>
-            <View className='flex '>
+            }
+            headerStyle={styles.customHeaderStyle}
+            descriptionStyle={styles.customDescriptionStyle}>
+            <View>
               <LogOptions
                 iconName='mail-outline'
                 btnText='Continue with email'
-                onPress={() => router.push("(onBoard)/mailVerification")}
+                onPress={() => router.push("(onBoard)/createAccount")}
               />
               <LogOptions
                 iconName='logo-whatsapp'
@@ -47,6 +51,12 @@ const styles = StyleSheet.create({
     height: "100%",
     justifyContent: "center",
     alignItems: "center",
+  },
+  customHeaderStyle: {
+    marginBottom: 8,
+  },
+  customDescriptionStyle: {
+    marginBottom: 16,
   },
 });
 
