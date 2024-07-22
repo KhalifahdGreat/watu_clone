@@ -14,7 +14,7 @@ import Colors from "@/constants/Colors";
 import BackButton from "./BackButton";
 
 interface Prop {
-  formHeader: string;
+  formHeader?: string;
   formDescription?: string;
   children: ReactNode;
   headerStyle?: TextStyle;
@@ -32,7 +32,7 @@ export default function Form({
 }: Prop) {
   return (
     <View style={styles.container} className='py-2'>
-      <Watu />
+      <Watu width={80} height={80} />
       <View style={styles.form} className='py-6 px-4'>
         <View>
           <Text style={[styles.header, headerStyle]}>{formHeader}</Text>
@@ -53,7 +53,6 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: "center",
     justifyContent: "center",
-    gap: 24,
   },
   form: {
     width: screenWidth - 30,

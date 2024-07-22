@@ -140,7 +140,7 @@ export default function OnboardingScreen() {
               <GenericButton
                 IconColor='#fff'
                 buttonName='Create Account'
-                genericBtnFunction={() => router.push("/(onBoard)/login")}
+                genericBtnFunction={() => router.push("/(onBoard)/enterPin")}
                 buttonStyle={styles.button}
                 buttonTextStyle={styles.buttonText}
                 disabled={false}

@@ -1,49 +1,34 @@
-import React, { useState } from "react";
+import React from "react";
 import {
   View,
   StyleSheet,
   ImageBackground,
   StatusBar,
   TextInput,
-  TouchableOpacity,
   Text,
 } from "react-native";
 import { Formik } from "formik";
 import * as Yup from "yup";
 import Form from "@/components/Form";
 import { Ionicons } from "@expo/vector-icons";
-import { Link, useRouter } from "expo-router";
+import { useRouter, Link } from "expo-router";
 import Colors from "@/constants/Colors";
 import GenericButton from "@/components/Button";
 import BackButton from "@/components/BackButton";
 
-interface FormValues {
-  email: string;
-  password: string;
-}
-
 // Validation schema
 const validationSchema = Yup.object().shape({
-  email: Yup.string().email("Invalid email").required("Email is required"),
-  password: Yup.string()
-    .min(6, "Password must be at least 6 characters")
-    .required("Password is required"),
+  email: Yup.string()
+    .email("Invalid email address")
+    .required("Email is required"),
 });
 
-const MyComponent = () => {
+const RecoverPassword = () => {
   const router = useRouter();
-  const [isPasswordVisible, setIsPasswordVisible] = useState(false);
-  const [isEmailFocused, setIsEmailFocused] = useState(false);
-  const [isPasswordFocused, setIsPasswordFocused] = useState(false);
 
-  const togglePasswordVisibility = () => {
-    setIsPasswordVisible(!isPasswordVisible);
-  };
-
-  const handleSubmit = (values: FormValues) => {
+  const handleSubmit = (values: { email: string }) => {
     // Handle form submission
     console.log(values);
-    // You can redirect or perform other actions here
     router.push(""); // Example of navigation after submission
   };
 
@@ -55,7 +40,7 @@ const MyComponent = () => {
         source={require("@/assets/images/backBlue.png")}
         style={styles.imageBackground}>
         <Formik
-          initialValues={{ email: "", password: "" }}
+          initialValues={{ email: "" }}
           validationSchema={validationSchema}
           onSubmit={handleSubmit}>
           {({
@@ -69,10 +54,14 @@ const MyComponent = () => {
             dirty,
           }) => (
             <Form
-              formHeader={"Welcome Back"}
-              headerStyle={styles.customHeaderStyle}>
+              formHeader={"Recover Password"}
+              headerStyle={styles.customHeaderStyle}
+              formDescription={
+                "Enter the email address you used when you joined and we’ll send you instructions to reset your password"
+              }
+              descriptionStyle={styles.customDescriptionStyle}>
               <View style={styles.inputContainer}>
-                {!isEmailFocused && !values.email && (
+                {!values.email && (
                   <Text style={styles.placeholderText}>Email</Text>
                 )}
                 <TextInput
@@ -81,11 +70,7 @@ const MyComponent = () => {
                   keyboardType='email-address'
                   value={values.email}
                   onChangeText={handleChange("email")}
-                  onFocus={() => setIsEmailFocused(true)}
-                  onBlur={() => {
-                    handleBlur("email");
-                    setIsEmailFocused(false);
-                  }}
+                  onBlur={handleBlur("email")}
                 />
                 <Ionicons
                   name='mail-outline'
@@ -97,43 +82,8 @@ const MyComponent = () => {
                   <Text style={styles.errorText}>{errors.email}</Text>
                 )}
               </View>
-              <View style={styles.inputContainer}>
-                {!isPasswordFocused && !values.password && (
-                  <Text style={styles.placeholderText}>Password</Text>
-                )}
-                <TextInput
-                  style={styles.input}
-                  placeholder=''
-                  secureTextEntry={!isPasswordVisible}
-                  value={values.password}
-                  onChangeText={handleChange("password")}
-                  onFocus={() => setIsPasswordFocused(true)}
-                  onBlur={() => {
-                    handleBlur("password");
-                    setIsPasswordFocused(false);
-                  }}
-                />
-                <TouchableOpacity
-                  onPress={togglePasswordVisibility}
-                  style={styles.icon}>
-                  <Ionicons
-                    name={isPasswordVisible ? "eye-off" : "eye"}
-                    size={24}
-                    color={Colors.text_form}
-                  />
-                </TouchableOpacity>
-                {errors.password && touched.password && (
-                  <Text style={styles.errorText}>{errors.password}</Text>
-                )}
-              </View>
-              <View style={styles.forgotContainer}>
-                <Link href={""} style={styles.forgotText} className='underline'>
-                  Forgot your Password?
-                </Link>
-              </View>
-
               <GenericButton
-                buttonName='Login'
+                buttonName='Send reset Link'
                 IconColor={
                   dirty && isValid ? "#fff" : Colors.button_text_inactive
                 }
@@ -151,19 +101,9 @@ const MyComponent = () => {
                 ]}
                 disabled={!(dirty && isValid)}
               />
-              <View style={styles.bottomAlternative} className='leading-[5px]'>
-                <Text style={[styles.bottomText, styles.bottomTextOne]}>
-                  Don't have an account?
-                </Text>
-                <Link href={"(onBoard)/login"}>
-                  {" "}
-                  <Text
-                    style={[styles.bottomText, styles.bottomTextTwo]}
-                    className='underline'>
-                    Sign up
-                  </Text>
-                </Link>
-              </View>
+              <Link href={"/welcome"} style={styles.link}>
+                Log in
+              </Link>
             </Form>
           )}
         </Formik>
@@ -233,35 +173,11 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontFamily: "po-r", // Adjust font size as needed
   },
-  forgotContainer: {
-    width: "100%",
-    flexDirection: "row",
-    justifyContent: "flex-end",
-    marginBottom: 10,
-  },
-  forgotText: {
-    fontFamily: "po-r",
-    fontSize: 11,
-    color: Colors.primary,
-    lineHeight: 18.5,
-  },
-  bottomAlternative: {
-    flexDirection: "row",
-    justifyContent: "center",
-    marginTop: 10,
-  },
-  bottomText: {
-    fontSize: 13,
-    fontFamily: "po-r",
-  },
-  bottomTextOne: {
-    color: Colors.bottomText,
-  },
-  bottomTextTwo: {
-    color: Colors.primary,
-  },
   customHeaderStyle: {
     marginBottom: 8,
+  },
+  customDescriptionStyle: {
+    marginBottom: 10,
   },
   errorText: {
     color: "red",
@@ -269,6 +185,13 @@ const styles = StyleSheet.create({
     position: "absolute",
     bottom: -20,
   },
+  link: {
+    fontFamily: "po-r",
+    fontSize: 13,
+    color: Colors.primary,
+    marginTop: 30,
+    textAlign: "center",
+  },
 });
 
-export default MyComponent;
+export default RecoverPassword;

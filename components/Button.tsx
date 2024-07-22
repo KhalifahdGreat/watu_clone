@@ -1,5 +1,5 @@
 import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
-import React from "react";
+import React, { ReactNode } from "react";
 import Colors from "@/constants/Colors";
 import { Ionicons } from "@expo/vector-icons";
 
@@ -10,22 +10,26 @@ interface Props {
   buttonStyle?: object; // Add custom button style
   buttonTextStyle?: object; // Add custom button text style
   disabled: boolean;
+  icon?: ReactNode; // Allow custom icon as ReactNode
 }
 
-const GenericButton = ({
+const GenericButton: React.FC<Props> = ({
   buttonName,
   IconColor,
   genericBtnFunction,
   buttonStyle,
   buttonTextStyle,
-}: Props) => {
+  disabled,
+  icon,
+}) => {
   return (
     <View style={styles.container}>
       <TouchableOpacity
-        style={[styles.button, buttonStyle]}
-        onPress={genericBtnFunction}>
+        style={[styles.button, buttonStyle, disabled && styles.buttonDisabled]}
+        onPress={genericBtnFunction}
+        disabled={disabled}>
         <Text style={[styles.buttonText, buttonTextStyle]}>{buttonName}</Text>
-        <Ionicons name='arrow-forward' size={24} color={IconColor} />
+        {icon || <Ionicons name='arrow-forward' size={24} color={IconColor} />}
       </TouchableOpacity>
     </View>
   );
@@ -46,6 +50,10 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "center",
     alignItems: "center",
+    width: "100%",
+  },
+  buttonDisabled: {
+    backgroundColor: Colors.button_inactive,
   },
   buttonText: {
     color: "#fff", // Adjust text color as needed

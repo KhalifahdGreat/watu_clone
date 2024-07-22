@@ -1,11 +1,8 @@
 // app/_layout.tsx
-import FontAwesome from "@expo/vector-icons/FontAwesome";
 import { useFonts } from "expo-font";
 import { Stack, useRouter } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import { useEffect } from "react";
-import { TouchableOpacity } from "react-native";
-import { Ionicons } from "@expo/vector-icons";
 
 export { ErrorBoundary } from "expo-router";
 
@@ -28,6 +25,7 @@ export default function RootLayout() {
     "po-m": require("../assets/fonts/Poppins-Medium.ttf"),
     "po-r": require("../assets/fonts/Poppins-Regular.ttf"),
     "po-sb": require("../assets/fonts/Poppins-SemiBold.ttf"),
+    "ro-r": require("../assets/fonts/Roboto-Regular.ttf"),
   });
 
   useEffect(() => {

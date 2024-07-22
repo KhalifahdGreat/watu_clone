@@ -43,17 +43,20 @@ const validationSchema = Yup.object().shape({
   firstName: Yup.string().required("First Name is required"),
   lastName: Yup.string().required("Last Name is required"),
   email: Yup.string().required("This field is required"),
-  phoneNumber: Yup.string().when("acctType", (acctType, schema) => {
-    if (typeof acctType === "string" && acctType === "Personal") {
-      return schema.required("Phone Number is required");
-    }
-    return schema.notRequired();
+  phoneNumber: Yup.string().when("email", (email, schema) => {
+    const isPersonalEmail = email && !email.includes("@company.com"); // Adjust this condition as needed
+    return isPersonalEmail
+      ? schema.required("Phone Number is required")
+      : schema.notRequired();
   }),
   postalCode: Yup.string().when("acctType", (acctType, schema) => {
-    if (typeof acctType === "string" && acctType === "Personal") {
-      return schema.required("Postal Code is required");
+    if (Array.isArray(acctType)) {
+      // Handle array case if needed
+      return schema.notRequired();
     }
-    return schema.notRequired();
+    return acctType === "Personal"
+      ? schema.required("Postal Code is required")
+      : schema.notRequired();
   }),
   country: Yup.string().required("Country is required"),
   password: Yup.string()
@@ -63,13 +66,11 @@ const validationSchema = Yup.object().shape({
     .oneOf([Yup.ref("password"), undefined], "Passwords must match")
     .required("Confirm Password is required"),
   referralCode: Yup.string().optional(),
-  businessEmail: Yup.string().when("acctType", (acctType, schema) => {
-    if (typeof acctType === "string" && acctType === "Business") {
-      return schema
-        .email("Invalid email")
-        .required("Business Email is required");
-    }
-    return schema.notRequired();
+  businessEmail: Yup.string().when("acctType", {
+    is: "Business",
+    then: (schema) =>
+      schema.email("Invalid email").required("Business Email is required"),
+    otherwise: (schema) => schema.notRequired(),
   }),
 });
 
@@ -81,7 +82,7 @@ const CreateAccount = () => {
   const [acctType, setAcctType] = useState("Personal");
   const [agreeTerms, setAgreeTerms] = useState(false);
 
-  const { countries } = useCountriesAndPostalCodes();
+  const { countries, loading, error } = useCountriesAndPostalCodes();
 
   const togglePasswordVisibility = () => {
     setIsPasswordVisible(!isPasswordVisible);
@@ -97,7 +98,7 @@ const CreateAccount = () => {
       <ScrollView contentContainerStyle={styles.scrollViewContent}>
         <Formik
           initialValues={{
-            acctType: acctType,
+            acctType: "Personal",
             firstName: "",
             lastName: "",
             email: "",
@@ -110,10 +111,10 @@ const CreateAccount = () => {
             businessEmail: "",
           }}
           validationSchema={validationSchema}
-          onSubmit={(values) => {
+          onSubmit={(values: FormValues) => {
             if (agreeTerms) {
               console.log(values);
-              router.push("/(onBoard)/account_verification");
+              router.push("");
             } else {
               alert("You must agree to the terms and conditions");
             }
@@ -218,7 +219,7 @@ const CreateAccount = () => {
                         onBlur={handleBlur("email")}
                       />
                       <Ionicons
-                        name='person-outline'
+                        name='mail-outline'
                         size={24}
                         color={Colors.text_form}
                         style={styles.icon}
@@ -307,6 +308,33 @@ const CreateAccount = () => {
                             )}
                           </View>
                         </View>
+                        <View
+                          style={styles.fullInputContainer}
+                          key='referralCodeContainer'>
+                          {!values.referralCode && (
+                            <Text style={styles.placeholderText}>
+                              Referral Code
+                            </Text>
+                          )}
+                          <TextInput
+                            style={styles.input}
+                            placeholder=''
+                            value={values.referralCode}
+                            onChangeText={handleChange("referralCode")}
+                            onBlur={handleBlur("referralCode")}
+                          />
+                          <Ionicons
+                            name='gift-outline'
+                            size={24}
+                            color={Colors.text_form}
+                            style={styles.icon}
+                          />
+                          {touched.referralCode && errors.referralCode && (
+                            <Text style={styles.errorText}>
+                              {errors.referralCode}
+                            </Text>
+                          )}
+                        </View>
                       </>
                     )}
                     <View
@@ -393,33 +421,6 @@ const CreateAccount = () => {
                         </Text>
                       )}
                     </View>
-                    <View
-                      style={styles.fullInputContainer}
-                      key='referralCodeContainer'>
-                      {!values.referralCode && (
-                        <Text style={styles.placeholderText}>
-                          Referral Code
-                        </Text>
-                      )}
-                      <TextInput
-                        style={styles.input}
-                        placeholder=''
-                        value={values.referralCode}
-                        onChangeText={handleChange("referralCode")}
-                        onBlur={handleBlur("referralCode")}
-                      />
-                      <Ionicons
-                        name='gift-outline'
-                        size={24}
-                        color={Colors.text_form}
-                        style={styles.icon}
-                      />
-                      {touched.referralCode && errors.referralCode && (
-                        <Text style={styles.errorText}>
-                          {errors.referralCode}
-                        </Text>
-                      )}
-                    </View>
                     <View>
                       <CheckBox onChange={setAgreeTerms} />
                     </View>
@@ -430,11 +431,10 @@ const CreateAccount = () => {
                       buttonStyle={[
                         styles.button,
                         (!agreeTerms || !isValid) && styles.buttonDisabled,
-                      ]}
+                      ]} // Disable button if terms not agreed
                       buttonTextStyle={styles.buttonText}
-                      disabled={!agreeTerms || !isValid}
+                      disabled={!agreeTerms || !isValid} // Disable button if terms not agreed
                     />
-
                     <View
                       style={styles.bottomAlternative}
                       key='loginLink'
@@ -460,6 +460,27 @@ const CreateAccount = () => {
     </SafeAreaView>
   );
 };
+
+const pickerSelectStyles = StyleSheet.create({
+  inputIOS: {
+    flex: 1,
+    padding: 10,
+    fontSize: 16,
+    fontFamily: "po-r",
+    color: "#000",
+  },
+  inputAndroid: {
+    flex: 1,
+    padding: 10,
+    fontSize: 16,
+    fontFamily: "po-r",
+    color: "#000",
+  },
+  iconContainer: {
+    top: 15,
+    right: 10,
+  },
+});
 
 const styles = StyleSheet.create({
   safeArea: {
@@ -489,7 +510,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: "#ccc",
     borderRadius: 5,
-    marginBottom: 12,
+    marginBottom: 10,
     paddingRight: 10, // To ensure the icon has some space on the right
     position: "relative",
     height: 55, // Adjust the height to ensure proper alignment
@@ -501,7 +522,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: "#ccc",
     borderRadius: 5,
-    marginBottom: 12,
+    marginBottom: 10,
     paddingRight: 10, // To ensure the icon has some space on the right
     position: "relative",
     height: 55, // Adjust the height to ensure proper alignment
@@ -568,7 +589,10 @@ const styles = StyleSheet.create({
     position: "absolute",
     bottom: -13,
   },
-  backbutton: {},
+  backbutton: {
+    position: "absolute",
+    top: -30,
+  },
 });
 
 export default CreateAccount;

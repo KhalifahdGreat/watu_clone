@@ -7,6 +7,7 @@ export default {
   inactive: "#DEE8F8",
   button_inactive: "#EBEBEB",
   button_text_inactive: "#808080",
+  pin_input: "#FEF5D7",
   bottomText: "#231A23",
   dark: "#1A1A1A",
   red: "#f00",
